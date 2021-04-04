@@ -31,6 +31,32 @@ async def create_template(resp: Response, template: ItemTemplate):
     _create_items(template)
 
 
+@app.put("/_admin/templates/{pk}", status_code=status.OK)
+async def upsert_template(pk: str, template: ItemTemplate):
+    try:
+        # if the template name change, we need to shuffle the data around
+        existing_template = databases["templates"].get(pk)
+        old_name, new_name = existing_template.name, template.name
+        if old_name != new_name:
+            databases[new_name] = databases.pop(old_name, InMemoryDB())
+    except NotFoundError:
+        pass
+
+    databases["templates"].insert(template, pk=pk)
+
+    return template.dict()
+
+
+@app.delete("/_admin/templates/{pk}", status_code=status.GONE)
+async def delete_template(pk: str):
+    try:
+        template = databases["templates"].get(pk)
+        databases["templates"].delete(pk)
+        databases.pop(template.name, None)
+    except NotFoundError:
+        pass
+
+
 def _create_items(template: ItemTemplate, new_items: int = DEFAULT_NEW_ITEMS) -> None:
     global databases
     db = InMemoryDB()
@@ -41,10 +67,10 @@ def _create_items(template: ItemTemplate, new_items: int = DEFAULT_NEW_ITEMS) ->
         db.insert(item)
 
 
-@app.get("/_admin/templates/{template_id}")
-async def get_template(resp: Response, template_id: str = Path(...)):
+@app.get("/_admin/templates/{pk}")
+async def get_template(resp: Response, pk: str = Path(...)):
     try:
-        template = databases["templates"].get(template_id)
+        template = databases["templates"].get(pk)
     except NotFoundError:
         raise HTTPException(status_code=status.NOT_FOUND)
 

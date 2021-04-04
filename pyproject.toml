@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+addopts = "--flake8 --mypy --cov src --cov-report term-missing --color=yes"
+testpaths = [
+	"tests"
+]

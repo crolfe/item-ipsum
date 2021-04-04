@@ -1,0 +1,34 @@
+{
+    "name": "todos",
+    "description": "A collection of tasks on a todo list",
+    "attrs": {
+        "title": {
+            "type": "string"
+        },
+        "is_complete": {
+            "type": "bool"
+        },
+        "description": {
+            "type": "string"
+        },
+        "priority": {
+            "type": "int",
+            "args": {
+                "min_value": 1,
+                "max_value": 5
+            }
+        },
+        "due_date": {
+            "type": "datetime",
+            "args": {
+                "period": "future"
+            }
+        },
+        "created": {
+            "type": "datetime",
+            "args": {
+                "period": "past"
+            }
+        }
+    }
+}

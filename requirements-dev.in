@@ -1,0 +1,12 @@
+-r requirements.in
+
+bandit
+black
+invoke
+ipython
+isort
+pytest
+pytest-cov
+pytest-flake8
+pytest-mypy
+requests
